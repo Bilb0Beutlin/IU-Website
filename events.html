@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"/>
+    <link rel="stylesheet" href="../general.css"/>
+    <link rel="stylesheet" href="../navigation.css"/>
+    <link rel="stylesheet" href="./events.css"/>
+    <title>Evenz</title>
+  </head>
+  <body>
+    <nav>
+      <div class="heading">
+        <h4>GameNightZ</h4>
+      </div>
+      <ul class="nav-links">
+        <li><a href="../Main/main.html">Home</a></li>
+        <li><a href="../AboutUs/aboutus.html">AboutUz</a></li>
+        <li><a class="active-page" href="../Events/events.html">Evenz</a></li>
+        <li><a href="../Location/location.html">Locationz</a></li>
+        <li><a href="../FAQs/faqs.html">FAQ</a></li>
+        <li><a href="../Login/login.html">LogIn</a></li>
+      </ul>
+    </nav>
+    <div class="extras-container"> <!-- Create Event Button und Filter -->
+      <div class="create-event-button" onclick="openCreateEvent()">
+        <div class="create-event-text button-text">
+          Add Event
+        </div>
+      </div>
+      <div class="filter-event-container">
+        <input type="text" class="filter-event-input" placeholder="filter tags: 'minecraft, league of legends, csgo'" onchange="loadEventsWithTags()" oninput="loadEventsWithTags()">
+      </div>
+    </div>
+    <div class="calendar-container"> <!-- Alles was mit den Event-karten zu tun hat --> <!-- ----- HIER NICHTS ÄNDERN!!! ----- -->
+      <div class="calendar-empty"> <!-- wird angezeigt wenn keine Events geplant sind-->
+        Es sind zurzeit keine Events geplant
+      </div>
+      <!-- <div class="year-container" data-year="year2023">
+        <div class="month-container" data-month="month0">
+          <div class="month-title">
+            Januar 2023
+          </div>
+          <div class="month-content">
+            <div class="event-entry" data-id="0" onclick="openEventDetails(this)">
+              <img src="../Images/Image1.jpg">
+              <div class="event-content">
+                1. Januar 2023<br>
+                Titel
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+    <div class="event-details-container">
+      <div class="event-details-title">
+        Titel
+      </div>
+      <div class="event-details-date">
+        Datum
+      </div>
+      <div class="event-details-time">
+        Uhrzeit
+      </div>
+      <div class="event-details-cancel-button" onclick="closeEventDetails()">
+        X
+      </div>
+      <div class="event-details-book-button" onclick="bookEvent()">
+        <div class="button-text">
+          Book Event
+        </div>
+      </div>
+    </div>
+    <div class="create-event-container">
+      <div class="create-event-title-container">
+        <div class="create-event-title-text">
+          Titel:
+        </div>
+        <input class="create-event-title-input" type="text" required>
+      </div>
+      <div class="create-event-date-container">
+        <div class="create-event-date-text">
+          Datum:
+        </div>
+        <input class="create-event-date-input" type="date" required>
+      </div>
+      <div class="create-event-time-container">
+        <div class="create-event-time-text">
+          Uhrzeit:
+        </div>
+        <input class="create-event-time-input" type="time" required>
+      </div>
+      <div class="create-event-cancel-button" onclick="closeCreateEvent()">
+        X
+      </div>
+      <div class="create-event-save-button" onclick="saveEventEntries()">
+        <div class="create-event-save-text button-text">
+          Save
+        </div>
+      </div>
+    </div>
+    <script src="./events.js"></script>
+  </body>
+</html>
