@@ -13,11 +13,6 @@
         <li><a href="/eventz">Evenz</a></li>
         <li><a href="/locationz">Locationz</a></li>
         <li><a href="/faq">FAQ</a></li>
-        {% if app.user %}
-            {% if 'ROLE_USER' in app.user.getRoles() %}
-                <li><a href="/userz">UserZ</a></li>
-                {% endif %}
-            {% endif %}
         <li><a href="/login">LogIn</a></li>
       </ul>
     </nav>
@@ -48,4 +43,16 @@
         </ul>
       </section>
     </main>
+    <div class="Footer_outer">
+    <div class="Footer_inner_left"> <br><strong>Vertreten durch:</strong><br>Max Muster <br>
+      Musterweg<br>
+      12345 Musterstadt <br></div>
+    <div class="Footer_inner_right"> <br><strong>Kontakt:</strong> <br>
+      Telefon: 01234-789456<br>
+      Fax: 1234-56789<br>
+      E-Mail: <a href='mailto:max@muster.de'>max@muster.de</a><br>
+
+      <a href="../Impressum/Impressum.html">Impressum</a></li>
+    </div>
+  </div>
 {% endblock %}

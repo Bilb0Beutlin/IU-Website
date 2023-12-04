@@ -3,7 +3,7 @@
 {% block title %}Hello EventzController!{% endblock %}
 
 {% block body %}
-<nav>
+{# <nav>
       <div class="heading">
         <h4>GameNightZ</h4>
       </div>
@@ -33,7 +33,6 @@
                 <th>DateAndTime</th>
                 <th>Describtion</th>
                 <th>FeaturedGames</th>
-                <th>Visitors</th>
                
             
                 
@@ -58,14 +57,7 @@
                     
                     {% endif %}
                 </td>
-                <td>
-                    {% if game_night.visitors != null %}
-                    {% for visitors in game_night.visitors %} 
-
-                    {{ visitors.userName}} 
-                    {% endfor %}
-                    {% endif %}
-                </td>
+                <td> </td>
                 
                 
                     
@@ -79,5 +71,121 @@
         {% endfor %}
         </tbody>
     </table>
-    
+    <div class="Footer_outer">
+    <div class="Footer_inner_left"> <br><strong>Vertreten durch:</strong><br>Max Muster <br>
+      Musterweg<br>
+      12345 Musterstadt <br></div>
+    <div class="Footer_inner_right"> <br><strong>Kontakt:</strong> <br>
+      Telefon: 01234-789456<br>
+      Fax: 1234-56789<br>
+      E-Mail: <a href='mailto:max@muster.de'>max@muster.de</a><br>
+
+      <a href="../Impressum/Impressum.html">Impressum</a></li>
+    </div>
+  </div>#}
+    <nav>
+      <div class="heading">
+        <h4>GameNightZ</h4>
+      </div>
+      <ul class="nav-links">
+        <li><a class="active-page" href="/">Home</a></li>
+        <li><a href="/aboutuz">AboutUz</a></li>
+        <li><a href="/eventz">Evenz</a></li>
+        <li><a href="/locationz">Locationz</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/login">LogIn</a></li>
+      </ul>
+    </nav>
+    <div class="extras-container"> <!-- Create Event Button und Filter -->
+      <div class="create-event-button" onclick="openCreateEvent()">
+        <div class="create-event-text button-text">
+          Add Event
+        </div>
+      </div>
+      <div class="filter-event-container">
+        <input type="text" class="filter-event-input" placeholder="filter tags: 'minecraft, league of legends, csgo'" onchange="loadEventsWithTags()" oninput="loadEventsWithTags()">
+      </div>
+    </div>
+    <div class="calendar-container"> <!-- Alles was mit den Event-karten zu tun hat --> <!-- ----- HIER NICHTS ÄNDERN!!! ----- -->
+      <div class="calendar-empty"> <!-- wird angezeigt wenn keine Events geplant sind-->
+        Es sind zurzeit keine Events geplant
+      </div>
+      <!-- <div class="year-container" data-year="year2023">
+        <div class="month-container" data-month="month0">
+          <div class="month-title">
+            Januar 2023
+          </div>
+          <div class="month-content">
+            <div class="event-entry" data-id="0" onclick="openEventDetails(this)">
+              <img src="../Images/Image1.jpg">
+              <div class="event-content">
+                1. Januar 2023<br>
+                Titel
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+    <div class="event-details-container">
+      <div class="event-details-title">
+        Titel
+      </div>
+      <div class="event-details-date">
+        Datum
+      </div>
+      <div class="event-details-time">
+        Uhrzeit
+      </div>
+      <div class="event-details-cancel-button" onclick="closeEventDetails()">
+        X
+      </div>
+      <div class="event-details-book-button" onclick="bookEvent()">
+        <div class="button-text">
+          Book Event
+        </div>
+      </div>
+    </div>
+    <div class="create-event-container">
+      <div class="create-event-title-container">
+        <div class="create-event-title-text">
+          Titel:
+        </div>
+        <input class="create-event-title-input" type="text" required>
+      </div>
+      <div class="create-event-date-container">
+        <div class="create-event-date-text">
+          Datum:
+        </div>
+        <input class="create-event-date-input" type="date" required>
+      </div>
+      <div class="create-event-time-container">
+        <div class="create-event-time-text">
+          Uhrzeit:
+        </div>
+        <input class="create-event-time-input" type="time" required>
+      </div>
+      <div class="create-event-cancel-button" onclick="closeCreateEvent()">
+        X
+      </div>
+      <div class="create-event-save-button" onclick="saveEventEntries()">
+        <div class="create-event-save-text button-text">
+          Save
+        </div>
+      </div>
+    </div>
+    <div class="Footer_outer">
+    <div class="Footer_inner_left"> <br><strong>Vertreten durch:</strong><br>Max Muster <br>
+      Musterweg<br>
+      12345 Musterstadt <br></div>
+    <div class="Footer_inner_right"> <br><strong>Kontakt:</strong> <br>
+      Telefon: 01234-789456<br>
+      Fax: 1234-56789<br>
+      E-Mail: <a href='mailto:max@muster.de'>max@muster.de</a><br>
+
+      <a href="../Impressum/Impressum.html">Impressum</a></li>
+    </div>
+  </div>
+    <script src="../assets/events.js"></script>
+
 {% endblock %}
