@@ -1,8 +1,6 @@
-let allEvents = [];
-let allBookings = []; // Alle Events die der angemeldete Benutzer gebucht hat
+let allEvents;
+let currentUser;
 const allMonths = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-
-loadAllEvents();
 
 // Event details
 
@@ -22,14 +20,17 @@ function openEventDetails(_eventEntry)
     }
   }
   _eventDetailContainer.querySelector(".event-details-title").innerHTML = _currentOpenEvent.title;
-  _eventDetailContainer.querySelector(".event-details-date").innerHTML = _currentOpenEvent.dateToString();
-  _eventDetailContainer.querySelector(".event-details-time").innerHTML = _currentOpenEvent.timeToString();
+  _eventDetailContainer.querySelector(".event-details-date").innerHTML = _currentOpenEvent.dateToString() + "<br>" + _currentOpenEvent.timeToString() + " Uhr";
+  _eventDetailContainer.querySelector(".event-details-tags").innerHTML = _currentOpenEvent.tagsToString();
 }
 
 function bookEvent()
 {
-  //datenbank eintrag
-  // mit _currentOpenEvent
+  currentUser.bookedEventIds.push(_currentOpenEvent.id);
+  _currentOpenEvent.addTags(currentUser.tags);
+  // leitet zum Bezahlen weiter
+  closeEventDetails();
+  loadAllEvents();
 }
 
 function closeEventDetails()
@@ -67,7 +68,7 @@ function closeCreateEvent()
 
 function createEvent(_title, _date, _time, _tags)
 {
-  allEvents.push(new Event(_title, _date, _time, _tags)); // fügt das Event dem Event-array hinzu
+  allEvents.push(new Event(allEvents.length, _title, _date, _time, _tags)); // fügt das Event dem Event-array hinzu
   // löscht alle Events, die älter "heute" sind
   let _currentDate = new Date();
   for (let _i = allEvents.length - 1; _i >= 0; _i--)
@@ -92,39 +93,39 @@ function createEvent(_title, _date, _time, _tags)
 function loadAllEvents()
 {
   document.querySelector(".calendar-container").innerHTML = ""; // löscht alle Events (auf der Website) - Events sind aber noch im Array gespeichert
-  for (let _event of allEvents)
-  {
-    addEvent(_event);
-  }
-  if (allEvents.length == 0) document.querySelector(".calendar-container").innerHTML = "<div class=\"calendar-empty\">Es sind zurzeit keine Events geplant</div>";
-}
-
-function loadEventsWithTags()
-{
-  document.querySelector(".calendar-container").innerHTML = ""; // löscht alle Events (auf der Website) - Events sind aber noch im Array gespeichert
-  let _eventsMatch = [];
   let _currentFilter = document.querySelector(".filter-event-input").value.split(",");
   if (_currentFilter[0] == "")
   {
-    loadAllEvents();
+    loadEvents(allEvents);
+    if (allEvents.length == 0) document.querySelector(".calendar-container").innerHTML = "<div class=\"calendar-empty\">Es sind zurzeit keine Events geplant</div>";
     return;
   }
+  let _eventsMatch = [];
   for (let _event of allEvents)
   {
     for (let _eventTag of _event.tags)
     {
-      for (let _filterTag of _currentFilter)
+      for (let _filterTagName of _currentFilter)
       {
-        _filterTag = _filterTag.trim();
-        if (!_eventsMatch.includes(_event) && _eventTag.toLowerCase().includes(_filterTag.toLowerCase())) _eventsMatch.push(_event);
+        _filterTagName = _filterTagName.trim();
+        if (_filterTagName != "" && !_eventsMatch.includes(_event) && _eventTag.name.toLowerCase().includes(_filterTagName.toLowerCase())) _eventsMatch.push(_event);
       }
     }
   }
-  for (let _event of _eventsMatch)
+  loadEvents(_eventsMatch);
+  if (_eventsMatch.length == 0) document.querySelector(".calendar-container").innerHTML = "<div class=\"calendar-empty\">Es wurden keine Events mit dieser Auswahl gefunden</div>";
+}
+
+function loadEvents(_events)
+{
+  for (let _event of _events)
   {
     addEvent(_event);
+    for (let _bookedEventId of currentUser.bookedEventIds)
+    {
+      if (_bookedEventId == _event.id) document.querySelector("[data-id=\"" + _event.id + "\"]").style["border-color"] = "green";
+    }
   }
-  if (_eventsMatch.length == 0) document.querySelector(".calendar-container").innerHTML = "<div class=\"calendar-empty\">Es wurden keine Events mit dieser Auswahl gefunden</div>";
 }
 
 function addEvent(_event) // fügt die Event-karte dem HTML-dokument zu
@@ -144,13 +145,53 @@ function addYear(_date) // fügt neues Jahr hinzu (Feld für Monate)
   if (!document.querySelector("[data-year=\"year" + _date[2].toString() + "\"]")) document.querySelector(".calendar-container").innerHTML += "<div class=\"year-container\" data-year=\"year" + _date[2].toString() + "\"></div>";
 }
 
-// Class Event
+// Class Event / User
+
+class EventTag
+{
+  constructor(_name, _count)
+  {
+    this.name = _name;
+    this.count = _count;
+  }
+  static includes(_tagName, _existingTags)
+  {
+    for (let _tag of _existingTags)
+    {
+      if (_tagName == _tag.name) return true;
+    }
+    return false;
+  }
+  static addCount(_tagName, _existingTags)
+  {
+    for (let _tag of _existingTags)
+    {
+      if (_tagName == _tag.name) _tag.count++;
+    }
+  }
+  static sortAllTags(_tags)
+  {
+    _tags.sort(function(a, b)
+    {
+      return b.count - a.count;
+    });
+  }
+  static addTag(_newTagName, _existingTags)
+  {
+    if (EventTag.includes(_newTagName, _existingTags)) EventTag.addCount(_newTagName, _existingTags);
+    else
+    {
+      _existingTags.push(new EventTag(_newTagName, 1));
+    }
+    EventTag.sortAllTags(_existingTags);
+  }
+}
 
 class Event
 {
-  constructor(_title, _date, _time)
+  constructor(_id, _title, _date, _time)
   {
-    this.id = 0;
+    this.id = _id;
     this.title = _title;
     this.date = _date; // [day, month, year]
     this.time = _time; // [hour, minute]
@@ -173,11 +214,19 @@ class Event
   tagsToString()
   {
     let _tagString = "";
-    for (let _i = 0; _i < this.tags; _i++)
+    for (let _i = 0; _i < this.tags.length; _i++)
     {
-      _tagString = _tagString + ((_i > 0) ? ", " : "") + this.tags[_i];
+      if (_i >= 5) return _tagString;
+      _tagString = _tagString + ((_i > 0) ? "<br>" : "") + this.tags[_i].name;
     }
     return _tagString;
+  }
+  addTags(_tagNames)
+  {
+    for (let _tagName of _tagNames)
+    {
+      EventTag.addTag(_tagName, this.tags);
+    }
   }
   getEventImagePath()
   {
@@ -185,8 +234,60 @@ class Event
     {
       case "GameNight":
         return "../Images/Image1.jpg";
+      case "Girls Night":
+        return "../Images/Image1.jpg";
       default:
         return "../Images/Image1.jpg";
     }
   }
+  static getAllEvents()
+  {
+    // hier wird auf die Datenbank zugegriffen
+    let _event1 = new Event(0, "Game Night", [12, 12, 2023], [13, 0]);
+    _event1.addTags(["minecraft", "csgo"]);
+    let _event2 = new Event(1, "Game Night", [13, 12, 2023], [14, 30]);
+    _event2.addTags(["minecraft", "ark"]);
+    let _event3 = new Event(2, "Girls Night", [2, 1, 2024], [13, 0]);
+    _event3.addTags(["ark", "csgo"]);
+    let _event4 = new Event(3, "Game Night", [2, 1, 2024], [15, 0]);
+    _event4.addTags(["pubg", "csgo"]);
+    allEvents = [_event1, _event2, _event3, _event4];
+    loadAllEvents();
+  }
+  static saveAllEvents()
+  {
+    for (let _event of allEvents)
+    {
+      // hier wird jedes Event mit den zugehörigen Daten in die Datenbank eingetragen
+    }
+  }
 }
+
+class User
+{
+  constructor()
+  {
+    this.isAdmin = this.loadUserAdmin();
+    if (this.isAdmin) document.querySelector(".create-event-button").style.display = "block";
+    this.tags = this.loadUserTags();
+    this.bookedEventIds = this.loadUserEvents();
+  }
+  loadUserAdmin()
+  {
+    // verbindet sich mit der Datenbank und sieht, ob der angemeldete Benutzer ein Admin ist
+    return true;
+  }
+  loadUserTags()
+  {
+    // verbindet sich mit der Datenbank und sieht, welche Tags der Benutzer angegeben hat
+    return ["minecraft", "csgo", "ark"];
+  }
+  loadUserEvents()
+  {
+    // gibt die von aktuellen Benutzer gebuchten Events aus der Datenbank aus
+    return [];
+  }
+}
+
+currentUser = new User();
+Event.getAllEvents();
