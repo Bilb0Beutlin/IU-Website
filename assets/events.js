@@ -191,5 +191,5 @@ class Event
   }
 }
 function test(){
-  console.log("hi");
+  console.log("hitest");
 }
